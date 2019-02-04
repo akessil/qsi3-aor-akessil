@@ -1,3 +1,31 @@
+type player =
+  | PlayerOne
+  | PlayerTwo;
+
+type point =
+  | Love
+  | Fifteen
+  | Thirty;
+
+type pointsData = {
+  playerOne: point,
+  playerTwo: point,
+};
+
+type fortyData = {
+  player, /* The player who have forty points */
+  otherPlayerPoint: point,
+};
+
+type score =
+  | Points(pointsData)
+  | Forty(fortyData)
+  | Deuce
+  | Advantage(player)
+  | Game(player);
+
+//let startScore : score = Points({playerOne: Love, playerTwo: Love});
+
 let scoreWhenDeuce: player => score = winner => Advantage(winner);
 
 /* This time we infer that the function type is (player) => player */
@@ -10,6 +38,15 @@ let other = player =>
 let scoreWhenAdvantage: (player, player) => score =
   (advantagedPlayer, winner) => advantagedPlayer == winner ? Game(winner) : Deuce;
 
+/* We add a tool function to increment point */
+let incrementPoint: point => option(point) =
+  point =>
+    switch (point) {
+    | Love => Some(Fifteen)
+    | Fifteen => Some(Thirty)
+    | Thirty => None
+    };
+
 let scoreWhenForty = (current, winner) =>
   current.player == winner ?
     Game(winner) :
@@ -19,15 +56,6 @@ let scoreWhenForty = (current, winner) =>
       | None => Deuce
       }
     );
-
-/* We add a tool function to increment point */
-let incrementPoint: point => option(point) =
-  point =>
-    switch (point) {
-    | Love => Some(Fifteen)
-    | Fifteen => Some(Thirty)
-    | Thirty => None
-    };
 
 let pointTo = (player, point, current) =>
   switch (player) {
